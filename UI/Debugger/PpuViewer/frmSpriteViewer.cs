@@ -268,7 +268,7 @@ namespace Mesen.GUI.Debugger
 
         private void exportSpriteImageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-			ctrlImagePanel.SaveRectAsBitmap(_selectedSprite.GetBounds());
+			ctrlImagePanel.SaveRect(_selectedSprite.GetBounds());
         }
     }
 }

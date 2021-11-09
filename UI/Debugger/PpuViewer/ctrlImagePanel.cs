@@ -144,18 +144,33 @@ namespace Mesen.GUI.Debugger.PpuViewer
 			}
 		}
 
-		public void SaveRectAsBitmap(Rectangle rect)
+		public void SaveRect(Rectangle rect)
         {
 			Bitmap cropped = new Bitmap(rect.Width, rect.Height);
 			using (SaveFileDialog sfd = new SaveFileDialog())
 			{
-				sfd.SetFilter("Bitmap files|*.bmp");
+				sfd.SetFilter("Bitmap file|*.bmp;*.BMP |PNG file|*.png;*.PNG|JPeg file|*.jpeg;*.JPG");
+				sfd.FilterIndex = 1;
 				using (Graphics g = Graphics.FromImage(cropped))
 				{
 					g.DrawImage(this.Image, new Rectangle(0, 0, rect.Width, rect.Height), rect, GraphicsUnit.Pixel);
 					if (sfd.ShowDialog() == DialogResult.OK)
 					{
-					cropped.Save(sfd.FileName);
+                  switch (sfd.FilterIndex)
+						{
+							case 0:
+								cropped.Save(sfd.FileName, ImageFormat.Bmp);
+								break;
+							case 1:
+								cropped.Save(sfd.FileName, ImageFormat.Png);
+								break;
+							case 2:
+								cropped.Save(sfd.FileName, ImageFormat.Jpeg);
+								break;
+							default:
+								cropped.Save(sfd.FileName, ImageFormat.Bmp);
+								break;
+						}
 					}
 				}
 			}
