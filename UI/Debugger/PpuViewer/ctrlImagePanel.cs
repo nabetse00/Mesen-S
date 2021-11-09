@@ -143,5 +143,22 @@ namespace Mesen.GUI.Debugger.PpuViewer
 				}
 			}
 		}
+
+		public void SaveRectAsBitmap(Rectangle rect)
+        {
+			Bitmap cropped = new Bitmap(rect.Width, rect.Height);
+			using (SaveFileDialog sfd = new SaveFileDialog())
+			{
+				sfd.SetFilter("Bitmap files|*.bmp");
+				using (Graphics g = Graphics.FromImage(cropped))
+				{
+					g.DrawImage(this.Image, new Rectangle(0, 0, rect.Width, rect.Height), rect, GraphicsUnit.Pixel);
+					if (sfd.ShowDialog() == DialogResult.OK)
+					{
+					cropped.Save(sfd.FileName);
+					}
+				}
+			}
+		}
 	}
 }

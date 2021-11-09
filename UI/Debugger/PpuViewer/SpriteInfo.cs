@@ -116,5 +116,18 @@ namespace Mesen.GUI.Debugger.PpuViewer
 			{ { 2, 4 }, { 4, 8 } }, //16x32 + 32x64
 			{ { 2, 4 }, { 4, 4 } }  //16x32 + 32x32
 		};
+
+		override public string ToString() {
+			// simple Json serialization
+			string json = "{\n";
+			System.Reflection.FieldInfo[] fields = this.GetType().GetFields();
+			foreach (System.Reflection.FieldInfo field in fields)
+			{
+				json += String.Format("	\"{0}\":\"{1}\",\n", field.Name, field.GetValue(this));
+			}
+			json += "}\n";
+			return json;
+
+		}
 	}
 }

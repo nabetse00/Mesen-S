@@ -3,20 +3,14 @@ using Mesen.GUI.Debugger.Controls;
 using Mesen.GUI.Debugger.PpuViewer;
 using Mesen.GUI.Forms;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Mesen.GUI.Debugger
 {
-	public partial class frmSpriteViewer : BaseForm, IRefresh, IDebuggerWindow
+    public partial class frmSpriteViewer : BaseForm, IRefresh, IDebuggerWindow
 	{
 		private DebugState _state;
 		private byte[] _vram;
@@ -26,6 +20,8 @@ namespace Mesen.GUI.Debugger
 		private Bitmap _previewImage;
 		private GetSpritePreviewOptions _options = new GetSpritePreviewOptions();
 		private WindowRefreshManager _refreshManager;
+
+		private SpriteInfo _selectedSprite; 
 		
 		public CpuType CpuType { get; private set; }
 		public ctrlScanlineCycleSelect ScanlineCycleSelect { get { return this.ctrlScanlineCycleSelect; } }
@@ -165,6 +161,10 @@ namespace Mesen.GUI.Debugger
 
 		private void ctrlImagePanel_MouseClick(object sender, MouseEventArgs e)
 		{
+			// refresh data to sync sprite info to list 
+			RefreshData();
+			RefreshViewer();
+
 			int x = e.X / ctrlImagePanel.ImageScale;
 			int y = e.Y / ctrlImagePanel.ImageScale;
 
@@ -182,6 +182,12 @@ namespace Mesen.GUI.Debugger
 			}
 
 			SelectSprite(match);
+			
+			if (match != null && e.Button == MouseButtons.Right) {
+				_selectedSprite = match;
+				contextMenuStrip1.Show((sender as Control).PointToScreen(e.Location));
+			}
+
 		}
 
 		private SpriteInfo GetSpriteInfo(int index)
@@ -231,5 +237,38 @@ namespace Mesen.GUI.Debugger
 			mnuAutoRefreshNormal.Checked = _refreshManager.AutoRefreshSpeed == RefreshSpeed.Normal;
 			mnuAutoRefreshHigh.Checked = _refreshManager.AutoRefreshSpeed == RefreshSpeed.High;
 		}
-	}
+
+        private void exportSpriteDateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+			if (_selectedSprite != null)
+			{
+				string data = _selectedSprite.ToString();
+				using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+				{
+
+					saveFileDialog.Filter = "csv files (*.csv)|*.csv|All files (*.*)|*.*";
+					saveFileDialog.FilterIndex = 1;
+					saveFileDialog.RestoreDirectory = true;
+
+					if (saveFileDialog.ShowDialog() == DialogResult.OK)
+					{
+						if (saveFileDialog.FileName != "")
+						{
+							System.IO.FileStream fs = (System.IO.FileStream)saveFileDialog.OpenFile();
+							byte[] info = new System.Text.UTF8Encoding(true).GetBytes(data);
+							fs.Write(info, 0, info.Length);
+							fs.Close();
+						}
+					}
+				}
+			}
+
+		}
+
+        private void exportSpriteImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+			ctrlImagePanel.SaveRectAsBitmap(_selectedSprite.GetBounds());
+        }
+    }
 }

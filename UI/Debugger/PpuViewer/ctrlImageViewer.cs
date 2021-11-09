@@ -92,7 +92,6 @@ namespace Mesen.GUI.Debugger.PpuViewer
 				using(SolidBrush brush = new SolidBrush(Color.FromArgb(100, 240, 240, 240))) {
 					int scale = this.ImageScale;
 					Rectangle rect = new Rectangle(_overlay.Left * scale % this.Width, _overlay.Top * scale % this.Height, _overlay.Width * scale, _overlay.Height * scale);
-
 					e.Graphics.FillRectangle(brush, rect.Left, rect.Top, rect.Width, rect.Height);
 					e.Graphics.DrawRectangle(Pens.Gray, rect.Left, rect.Top, rect.Width, rect.Height);
 
